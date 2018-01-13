@@ -138,9 +138,18 @@ ger.entropy <- -log2(german.freq) %>% mean()
 eng.txt <- "This is an example of text in this written language"
 ger.txt <- "dies ist ein Beispiel für einen text in dieser Shriftsprache"
 
-# Collapse to long char
-eng.txt <- to.string(eng.txt) %>% letter.filter(.) %>% find.entropy(., english.freq, per.letter = FALSE)
-ger.txt <- to.string(ger.txt) %>% letter.filter(.) %>% find.entropy(., german.freq, per.letter = FALSE)
+# Combines given text, removes non-characters, converts to lower case, and 
+#   finds either the total or per-letter entropy of the text
+
+# From the English text
+eng.ent <- to.string(eng.txt) %>% 
+    letter.filter(.) %>% 
+    find.entropy(., english.freq, per.letter = FALSE)
+
+# From the German text
+ger.ent <- to.string(ger.txt) %>% 
+    letter.filter(.) %>% 
+    find.entropy(., german.freq, per.letter = FALSE)
 
 
 
