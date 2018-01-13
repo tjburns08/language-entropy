@@ -16,7 +16,7 @@ to.string <- function(str.vector) {
 }
 #test <- c("hi", "bye")
 #paste(test, collapse = '')
-find.entropy <- function(word, letter.freq, per.letter = TRUE) {
+find.info.content <- function(word, letter.freq, per.letter = TRUE) {
     # Calculates the shannon entropy of a given string 
     # Args:
     #   word: a string
@@ -25,20 +25,22 @@ find.entropy <- function(word, letter.freq, per.letter = TRUE) {
     #       should be returned. Otherwise total entropy will be returned
     # Returns:
     #   the shannon entropy of the word
+    # Note: 
+    #   the shannon entropy is sum(p(x)(-log2(p(x))))
     letters <- regmatches(word, gregexpr(".", word))[[1]]
-    ent <- sapply(letters, function(i) {
+    ic <- sapply(letters, function(i) {
         letter.freq[grep(i, names(letter.freq))]
     }) %>% -log2(.)
     
     if(per.letter == TRUE) {
-        ent <- mean(ent)
+        ic <- mean(ic)
     } else if(per.letter == FALSE) {
-        ent <- sum(ent)
+        ic <- sum(ic)
     } else {
         stop("Please select a boolean value for per.letter")
     }
     
-    return(ent)
+    return(ic)
 }
 #test <- find.entropy("blue", english.freq)
 is.letter <- function(x) grepl("[[:alpha:]]", x)
@@ -130,9 +132,9 @@ german.freq <- c(a = 0.0558,
 ################# PIPELINE #################
 
 # Entropy vectors, all letters 
-# Average entropy for the given alphabet. It's around 5 bits / character.
-eng.entropy <- -log2(english.freq) %>% mean()
-ger.entropy <- -log2(german.freq) %>% mean()
+# Shannon Entropy for the given alphabet. It's around 5 bits / character.
+eng.entropy <- -sum(english.freq * log2(english.freq))
+ger.entropy <- -sum(german.freq * log2(german.freq))
 
 # Entropy for a random sample of German or English text
 eng.txt <- "This is an example of text in this written language"
@@ -141,16 +143,24 @@ ger.txt <- "dies ist ein Beispiel für einen text in dieser Shriftsprache"
 # Combines given text, removes non-characters, converts to lower case, and 
 #   finds either the total or per-letter entropy of the text
 
+# Finds information content of a message
 # From the English text
-eng.ent <- to.string(eng.txt) %>% 
+eng.ic <- to.string(eng.txt) %>% 
     letter.filter(.) %>% 
-    find.entropy(., english.freq, per.letter = FALSE)
+    find.info.content(., english.freq, per.letter = FALSE)
 
 # From the German text
-ger.ent <- to.string(ger.txt) %>% 
+ger.ic <- to.string(ger.txt) %>% 
     letter.filter(.) %>% 
-    find.entropy(., german.freq, per.letter = FALSE)
+    find.info.content(., german.freq, per.letter = FALSE)
 
+# TODO make sure to distinguish between information content and entropy
+# (expected value of the information content)
+
+# TODO consider n grams for better approximation (what letter occurs after a 
+# given letter, and how long is the average word)
+
+# TODO Sums of freqs are off by around 0.01. Double check for errors
 
 
     
