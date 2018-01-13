@@ -1,5 +1,5 @@
 # Date: January 10, 2018
-# Procedure: language efficiency analysi: english vs german
+# Procedure: language efficiency analysis: english vs german
 # Purpose: to use infomration theory to determine which language is more 
 #   efficient, english or german
 
